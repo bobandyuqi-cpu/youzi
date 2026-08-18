@@ -1,12 +1,38 @@
 /**
- * start.js — one-click entry: start the server, then auto-open the browser.
+ * start.js — one-click entry: ensure deps, start the server, then auto-open the browser.
  * Run:  node start.js
  * All logic lives here in one node process (no fragile cmd start/timeout).
  */
-const { exec, spawn } = require('child_process');
+const { exec, spawn, execSync } = require('child_process');
 const path = require('path');
+const fs = require('fs');
+
+const ROOT = path.join(__dirname, '..'); // 项目根目录（package.json 所在处）
+
+// 依赖缺失时自动 npm install（首次下载/克隆后无需手动装）
+function ensureDeps() {
+  try {
+    require.resolve('undici');
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
 (async () => {
+  // 0) 首次运行自动安装依赖
+  if (!ensureDeps()) {
+    console.log('  检测到缺少依赖，正在自动安装（npm install）...');
+    try {
+      execSync('npm install', { cwd: ROOT, stdio: 'inherit' });
+    } catch (e) {
+      console.log('  ⚠️ 自动安装失败，请手动在项目根目录执行: npm install');
+      console.log('     然后重新运行本工具。');
+      process.exit(1);
+    }
+    console.log('  依赖安装完成。');
+  }
+
   // 1) start the server (and wait until it's really listening)
   const { startServer } = require('./server.js');
 
