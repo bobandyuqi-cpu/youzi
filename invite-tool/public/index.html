@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自动邀请工具 · yueyu</title>
+<style>
+  :root { --bg:#0f1117; --card:#171a23; --line:#252a38; --txt:#e6e8ef; --mut:#8b91a3;
+          --green:#34d17b; --red:#ff5d5d; --amber:#f5a623; --blue:#4da3ff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--txt); font:14px/1.6 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif; }
+  .wrap { max-width:720px; margin:0 auto; padding:28px 20px 60px; }
+  h1 { font-size:22px; display:flex; align-items:center; gap:10px; }
+  h1 .dot { width:10px; height:10px; border-radius:50%; background:var(--amber); }
+  .sub { color:var(--mut); font-size:13px; margin-top:4px; }
+
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-top:18px; }
+  .row { display:flex; gap:14px; flex-wrap:wrap; }
+  .btn { flex:1; min-width:200px; padding:16px; border:none; border-radius:12px; cursor:pointer;
+         font-size:16px; font-weight:600; color:#0d0f16; transition:transform .06s, filter .15s; }
+  .btn:active { transform:scale(.98); }
+  .btn:disabled { opacity:.45; cursor:not-allowed; }
+  .btn.big { padding:22px; font-size:18px; }
+  .btn .tag { display:block; font-weight:400; font-size:12px; opacity:.75; margin-top:3px; }
+  .btn3 { background:linear-gradient(135deg,#34d17b,#20b465); }
+  .btn7 { background:linear-gradient(135deg,#f5a623,#e08c0b); }
+
+  .stat { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin-top:14px; }
+  .stat div { background:#1d212e; border:1px solid var(--line); border-radius:10px; padding:10px 12px; }
+  .stat .k { font-size:11px; color:var(--mut); }
+  .stat .v { font-size:20px; font-weight:700; margin-top:2px; }
+
+  .proxy { display:flex; align-items:center; gap:8px; font-size:14px; margin-top:12px; }
+  .pill { padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+  .pill.on  { background:rgba(52,209,123,.15); color:var(--green); }
+  .pill.off { background:rgba(255,93,93,.15); color:var(--red); }
+  .pill.warn{ background:rgba(245,166,35,.15); color:var(--amber); }
+
+  .log { margin-top:0; background:#0c0e14; border:1px solid var(--line); border-radius:10px;
+         height:280px; overflow:auto; padding:12px; font:12px/1.7 ui-monospace,Consolas,monospace; }
+  .log .ok { color:var(--green); } .log .bad { color:var(--red); } .log .info { color:var(--blue); }
+  .mut { color:var(--mut); font-size:12px; }
+  .spin { display:none; }
+  .running .spin { display:inline-block; width:14px;height:14px; border:2px solid #666; border-top-color:#fff;
+                   border-radius:50%; animation:s .8s linear infinite; margin-right:8px; vertical-align:-2px; }
+  @keyframes s { to { transform:rotate(360deg); } }
+  .footer { margin-top:22px; color:var(--mut); font-size:12px; }
+  .hist { margin-top:0; }
+  .hist-item { background:#1d212e; border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:10px; }
+  .hist-item .head { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .hist-item .time { font-size:12px; color:var(--mut); }
+  .hist-item .main { font-size:15px; font-weight:700; color:var(--txt); }
+  .hist-item .pwd { font-size:13px; color:var(--green); word-break:break-all; }
+  .hist-item .subs { margin-top:8px; font-size:12px; color:var(--mut); }
+  .hist-item .link { color:var(--blue); cursor:pointer; }
+  .hist-empty { color:var(--mut); padding:16px 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span class="dot"></span>自动邀请工具</h1>
+  <div class="sub">一键创建新主账号并自动邀请 N 人 · 攒金币 / 升 VIP · 请先开启 Hiddify</div>
+
+  <div class="card">
+    <div class="proxy" id="proxyBox">
+      代理状态：<span id="proxyStatus" class="pill warn">检测中…</span>
+      <span id="proxyIp" class="mut"></span>
+      <button class="pill" style="margin-left:auto;cursor:pointer;" onclick="checkProxy()">重新检测</button>
+    </div>
+    <div class="row" style="margin-top:14px;">
+      <button class="btn btn3 big" id="btn3" onclick="startInvite(3)">
+        邀请 3 人<span class="tag">创建主账号 + 3 个被邀账号</span>
+      </button>
+      <button class="btn btn7 big" id="btn7" onclick="startInvite(7)">
+        邀请 7 人<span class="tag">创建主账号 + 7 个被邀账号</span>
+      </button>
+    </div>
+    <div class="stat" id="statBox">
+      <div><div class="k">主账号</div><div class="v" id="statAccount">—</div></div>
+      <div><div class="k">已邀人数</div><div class="v" id="statInvite">—</div></div>
+      <div><div class="k">金币</div><div class="v" id="statCoins">—</div></div>
+      <div><div class="k">VIP</div><div class="v" id="statVip">—</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="mut" style="margin-bottom:8px;">运行日志</div>
+    <div class="log" id="logBox"><span class="mut">等待操作…</span></div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="row" style="align-items:center; margin-bottom:10px;">
+      <div class="mut" style="flex:1;">历史记录（最近的主账号 / 密码 / 次账号）</div>
+      <button class="pill" style="cursor:pointer;" onclick="loadHistory()">刷新</button>
+    </div>
+    <div id="histBox"><span class="hist-empty">加载中…</span></div>
+  </div>
+
+  <div class="footer">
+    凭证将保存到 invite-tool/accounts/ 下。每次运行创建全新的主账号，不冲突。<br>
+    未开启 Hiddify 时注册会被目标站按 IP 限速，请先打开代理。
+  </div>
+</div>
+
+<script>
+let running = false;
+const $ = (id) => document.getElementById(id);
+
+function renderLogEntry(line) {
+  if (line.includes('✓') || line.includes('✅')) return `<span class="ok">${line}</span>`;
+  if (line.includes('✗') || line.includes('❌')) return `<span class="bad">${line}</span>`;
+  if (line.includes('代理') || line.includes('开始') || line.includes('完成')) return `<span class="info">${line}</span>`;
+  return line;
+}
+
+function setRunning(state) {
+  running = state;
+  $('btn3').disabled = state;
+  $('btn7').disabled = state;
+  $('proxyBox').className = 'proxy' + (state ? ' running' : '');
+}
+
+async function checkProxy() {
+  const r = await fetch('/api/proxy-check', { method: 'POST' });
+  const det = await r.json();
+  renderProxy(det);
+}
+
+function renderProxy(det) {
+  const el = $('proxyStatus');
+  const ip = $('proxyIp');
+  if (det.ok && det.ip) {
+    el.className = 'pill on'; el.textContent = '已连接';
+    ip.textContent = `${det.ip.country}/${det.ip.city} ${det.ip.query} (${det.ip.isp})`;
+  } else if (det.ok) {
+    el.className = 'pill on'; el.textContent = '已连接'; ip.textContent = '';
+  } else {
+    el.className = 'pill off'; el.textContent = '未开启';
+    ip.textContent = '请打开 Hiddify（本地代理 127.0.0.1:12334）';
+  }
+}
+
+function renderStats(last) {
+  if (!last || !last.summary) return;
+  const s = last.summary;
+  $('statAccount').textContent = s.main || '—';
+  $('statInvite').textContent = (s.verified && s.verified.invite) ?? s.invited ?? '—';
+  $('statCoins').textContent = (s.verified && s.verified.coins) ?? '—';
+  $('statVip').textContent = (s.verified && s.verified.vip_level) ?? '—';
+}
+
+async function startInvite(n) {
+  if (running) return;
+  // ensure proxy first
+  const det = await (await fetch('/api/proxy-check', { method: 'POST' })).json();
+  renderProxy(det);
+  if (!det.ok) { alert('代理未开启，请先打开 Hiddify 再试。'); return; }
+  setRunning(true);
+  const r = await fetch('/api/invite', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ n }) });
+  const j = await r.json();
+  if (!j.ok && !j.started) { alert(j.error); setRunning(false); return; }
+  poll();
+}
+
+async function poll() {
+  const r = await fetch('/api/status');
+  const s = await r.json();
+  const box = $('logBox');
+  if (s.log && s.log.length) {
+    box.innerHTML = s.log.map(renderLogEntry).join('<br>');
+    box.scrollTop = box.scrollHeight;
+  }
+  renderStats(s.last);
+  if (s.running) { setTimeout(poll, 800); }
+  else { setRunning(false); }
+}
+
+async function loadHistory() {
+  const box = $('histBox');
+  let runs;
+  try { runs = (await (await fetch('/api/history')).json()).runs; }
+  catch { box.innerHTML = '<span class="hist-empty">历史记录读取失败</span>'; return; }
+  if (!runs || !runs.length) { box.innerHTML = '<span class="hist-empty">还没有历史运行记录</span>'; return; }
+  box.innerHTML = runs.map((r, i) => {
+    const t = r.fsTime ? new Date(r.fsTime).toLocaleString('zh-CN', { hour12: false }) : '—';
+    const subs = (r.subs || []).map(s => `${s.account} / ${s.password}`).join('<br>');
+    return `<div class="hist-item">
+      <div class="head"><span class="main">${i + 1}. ${r.main || '?'}</span>
+        <span class="time">${t} · 被邀 ${r.subCount} 人</span></div>
+      <div class="pwd">主账号密码：${r.mainPwd || '—'}</div>
+      <div class="pwd">邀请码：${r.inviteCode || '—'}</div>
+      <div class="subs">${subs}</div>
+    </div>`;
+  }).join('<br>');
+}
+
+checkProxy();
+loadHistory();
+setInterval(() => { if (!running) checkProxy(); }, 15000);
+</script>
+</body>
+</html>

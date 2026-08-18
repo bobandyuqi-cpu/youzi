@@ -1,0 +1,74 @@
+# ---- 依赖与缓存 ----
+node_modules/
+.npmcache/
+
+# ---- 敏感数据（真实账号/密码/token，绝不入库）----
+invite_main.json
+invite_subs.json
+invite-tool/accounts/
+*.token
+
+# ---- 下载的媒体与抓取产物 ----
+outputs/
+crawled/
+*.mp4
+*.ts
+
+# ---- 目标站逆向资源（bundle/资源文件，体积大且含版权内容）----
+assets/
+assets2/
+assets3/
+app_bundle*.js
+chunk_*.js
+index-*.js
+index-*.css
+home_.html
+index_probe.html
+
+# ---- 探测/临时产物 ----
+probe_sysinfo.json
+proxy_*.txt
+proxy_*.json
+proxy_*.html
+proxy_plist.html
+proxy_scdn_page.html
+test_proxy_resp.txt
+proxy_candidates.txt
+proxy_good.txt
+captured_requests.jsonl
+
+# ---- 开发过程中的冗余研究/诊断脚本（本地保留，不入库）----
+batch_probe.js
+claim_test.js
+compare_auth.js
+crawler.js
+diag_proxy.js
+egress_check.js
+fetch_full.js
+find_gold.js
+find_paid.js
+paid_play.js
+pay_stats.js
+probe_catalog.js
+probe_fetch_ctx.js
+probe_proxy_deep.js
+probe_proxy_js.js
+probe_proxy_list.js
+probe_proxy_scdn.js
+probe_test_btn.js
+probe_test_call.js
+proxy_inline_scripts.js
+proxy_pool.js
+proxy_scdn_proxy.js
+rewards_full.js
+scan_movies.js
+test_auth.js
+test_proxies.js
+verify_main.js
+invite_probe_rotate.js
+invite_step1_main.js
+download_sample.js
+
+# ---- 系统 ----
+.DS_Store
+Thumbs.db
