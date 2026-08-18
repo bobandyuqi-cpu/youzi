@@ -75,3 +75,6 @@ push_to_github.bat
 # ---- 系统 ----
 .DS_Store
 Thumbs.db
+
+# ---- 桌面快捷方式 ----
+*.lnk
