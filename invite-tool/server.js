@@ -24,6 +24,7 @@ function pushLog(line) {
 
 function saveAccounts(result) {
   if (!status.last) return;
+  fs.mkdirSync(accountsDir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const file = path.join(accountsDir, `run-${stamp}.json`);
   fs.writeFileSync(file, JSON.stringify({ main: result.main, subs: result.subs.slice(0, 20) }, null, 2));
