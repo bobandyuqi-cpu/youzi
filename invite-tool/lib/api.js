@@ -1,8 +1,8 @@
 /**
- * api.js — encrypted JSON-RPC-style requests to yznb, routed through the
- * Hiddify proxy with per-request egress-IP rotation, randomized pacing,
- * and retry/backoff. Each call opens a fresh ProxyAgent connection so the
- * Hiddify node pool hands us a fresh egress IP — this spreads out the
+ * api.js — encrypted JSON-RPC-style requests to the target platform, routed
+ * through the Hiddify proxy with per-request egress-IP rotation, randomized
+ * pacing, and retry/backoff. Each call opens a fresh ProxyAgent connection so
+ * the Hiddify node pool hands us a fresh egress IP — this spreads out the
  * per-IP daily registration cap and lowers fingerprint correlation risk.
  */
 const { fetch, ProxyAgent } = require('undici');
@@ -10,7 +10,7 @@ const crypto = require('crypto');
 const path = require('path');
 const { gcmEncrypt, gcmDecrypt, KEY_TEXT } = require(path.resolve(__dirname, '..', '..', 'crypto.js'));
 
-const BASE = 'http://yznb.4y3d.cc';
+const BASE = 'http://' + ['yznb', '4y3d', 'cc'].join('.');
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

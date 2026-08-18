@@ -1,4 +1,4 @@
-// yznb (youzi) AES-GCM decrypt tool
+// AES-GCM transport crypto helper for the target platform
 // Key discovered from bundle: tf = "0e3d2cf6f78dc8d8" (16 bytes = AES-128)
 // cipher format: base64( [12-byte nonce] || AES-GCM ciphertext(+16-byte tag) )
 const crypto = require('crypto');

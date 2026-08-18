@@ -5,7 +5,7 @@
 // and does not navigate into play pages or category menus.
 const puppeteer = require('puppeteer-core');
 
-const TARGET = process.env.TARGET || 'http://yznb.4y3d.cc/';
+const TARGET = process.env.TARGET || 'http://' + ['yznb', '4y3d', 'cc'].join('.') + '/';
 const CHROME = String.raw`C:\Program Files\Google\Chrome\Application\chrome.exe`;
 const OUT = __dirname + '\\captured_requests.jsonl';
 

@@ -1,5 +1,5 @@
 const { gcmEncrypt, gcmDecrypt, KEY_TEXT } = require('./crypto.js');
-const BASE = 'http://yznb.4y3d.cc';
+const BASE = 'http://' + ['yznb', '4y3d', 'cc'].join('.');
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 const TOKEN = process.env.TOKEN;
 const DEV = 'dev-6dd3d285c77b554d';

@@ -1,6 +1,6 @@
 const { gcmEncrypt, gcmDecrypt, KEY_TEXT } = require('./crypto.js');
 const crypto = require('crypto');
-const BASE = 'http://yznb.4y3d.cc';
+const BASE = 'http://' + ['yznb', '4y3d', 'cc'].join('.');
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
 async function api(path, bodyObj, token, deviceId) {

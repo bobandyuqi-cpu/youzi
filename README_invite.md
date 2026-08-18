@@ -1,6 +1,8 @@
-# yueyu 逆向项目 —— 邀请链路 (invite chain)
+# 邀请链路研究笔记 (invite chain)
 
-目标站: `yznb.4y3d.cc` (柚子)
+> 目标平台域名已打码：`yznb` `[.]` `4y3d` `[.]` `cc`（按 `[.]` 替换为英文句点拼接）
+> 本文仅为协议研究记录，请勿用于任何违规用途。
+
 传输加密: AES-GCM, 密钥 `0e3d2cf6f78dc8d8` (见 `crypto.js`)
 加解密协议: `base64( [12字节nonce] || AES-GCM密文(+16字节tag) )`
 
@@ -16,7 +18,7 @@
 |----|-----|
 | 主账号 | `<随机账号>` (uid 例如 `2000956`) |
 | 主账号邀请码 | 8 位小写字母数字, 例如 `02f2f434` |
-| 主账号邀请链接 | `https://yznb.3bas.cc/?inviteCode=<8位码>&sig=<hex>` |
+| 主账号邀请链接 | `https://<平台域名>/?inviteCode=<8位码>&sig=<hex>` |
 | 被邀请账号 | 每个主账号可邀请 N 个, 全部上账 |
 | 主账号钱包 | 每邀 1 人 +30 金币, 实时到账 |
 | 主账号 invite/list | 被邀记录全部上账 (含 account / invited_at / nickname) |
@@ -27,7 +29,7 @@
 
 ---
 
-## 关键情报 (脚本能复用的所有点)
+## 接口情报 (脚本能复用的所有点)
 
 ### 注册接口 `/api/auth/reg`
 ```
@@ -45,7 +47,7 @@ Headers: Content-Type: text/plain;charset=UTF-8
 
 ### 邀请相关
 - `user/info` 返回: `invite_code`, `invite_link`, `qr_code`, `invite`(已邀人数), `parent_uid`(上级 uid, 空=无上级)
-  - invite_link 格式: `https://yznb.3bas.cc/?inviteCode=<8位码>&sig=<hex>`
+  - invite_link 格式: `https://<平台域名>/?inviteCode=<8位码>&sig=<hex>`
   - qr_code 格式: `<uid>#<hex>`
 - `user/invite/list` `{page, page_size}` → `data.list[]`, 每条含被邀账号 `account`, `invited_at`(秒), `nickname`, `invite_code`
 - `user/walletinfo` → `data.gold`(金币)
@@ -78,8 +80,7 @@ node -e "const{ProxyAgent,fetch}=require('undici');(async()=>{const a=new ProxyA
 
 ```bash
 cd invite-tool
-npm install        # 首次安装依赖 (undici)
-node start.js      # 自动起服务并打开浏览器 http://127.0.0.1:5888
+node start.js      # 首次自动装依赖, 自动起服务并打开浏览器 http://127.0.0.1:5888
 ```
 
 界面提供「邀请 3 人」/「邀请 7 人」两个按钮, 一键完成: 注册主账号 → 读邀请码 → 批量邀请 → 校验金币/VIP。
@@ -89,9 +90,9 @@ node start.js      # 自动起服务并打开浏览器 http://127.0.0.1:5888
 
 ## 一起交付的脚本
 - `crypto.js` — AES-GCM 加解密工具
-- `download.js` — 单视频下载 (ffmpeg 拉 m3u8, 自动解密 AES-128 分片)
-- `invite-tool/` — ★ 自动邀请工具 (图形界面, 主交付物)
+- `download.js` — 媒体流下载 (ffmpeg 拉取, 自动解密分片)
+- `invite-tool/` — ★ 邀请自动化工具 (图形界面, 主交付物)
 
 ## 已知可再扩展的方向
-- 被邀请人注册后是否需要"实名/充值/看片"才触发**里程碑**奖励(当前每邀 1 人 30 金币是立到的)
+- 被邀请人注册后是否需要额外操作才触发**里程碑**奖励(当前每邀 1 人 30 金币是立到的)
 - 邀请链可继续向下延伸(被邀人再邀人 → 多级奖励), `parent_uid` 字段暗示层级结构

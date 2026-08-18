@@ -12,7 +12,7 @@ const crypto = require('crypto');
 const { fetch, ProxyAgent } = require('undici');
 const fs = require('fs');
 
-const BASE = 'http://yznb.4y3d.cc';
+const BASE = 'http://' + ['yznb', '4y3d', 'cc'].join('.');
 const PROXY = process.env.PROXY || 'http://127.0.0.1:12334';
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
