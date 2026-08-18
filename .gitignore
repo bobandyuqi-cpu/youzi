@@ -69,6 +69,9 @@ invite_probe_rotate.js
 invite_step1_main.js
 download_sample.js
 
+# ---- 本地一键推送脚本（含个人仓库地址，不入库）----
+push_to_github.bat
+
 # ---- 系统 ----
 .DS_Store
 Thumbs.db
